@@ -1,0 +1,40 @@
+appVersion: apps/v1
+kind: replicaSet
+metadata:
+  name: flask_demo_1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      type: api
+  template:
+    metadata:
+      labels:
+        type: api
+        language: python
+    spec:
+      containers:
+      - name: api
+        image : mortezasaki/KubeTest
+      readnessProbe:
+        httpGet:
+          path: /
+          port: 5000
+        periodSeconds: 1
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 5000
+
+---
+
+apiVersion: v1
+kind: service
+metadata:
+  name: flask_demo_1
+spec:
+  type: NodePort
+  ports:
+  - port: 5000
+  selector:
+    type: api
